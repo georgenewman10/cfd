@@ -1,0 +1,15 @@
+figure
+expEulerFunc(.025)
+expEulerFunc(.01)
+expEulerFunc(.001)
+expEulerFunc(.0005)
+legend('h = .025','h = .01', 'h = .001', 'h = .0005')
+title('Explicit Euler with Changing h')
+
+figure
+iEulerFunc(.025)
+expEulerFunc(.01)
+expEulerFunc(.001)
+expEulerFunc(.0005)
+legend('h = .025','h = .01', 'h = .001', 'h = .0005')
+title('Explicit Euler with Changing h')
