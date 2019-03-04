@@ -8,6 +8,3 @@ for i=1:n
     tn(i+1) = tn(i) + h;
 end
 end
-
-
-
