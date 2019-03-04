@@ -1,11 +1,9 @@
 clc; clear all; close all;
 
-%fun = @(x) sin(x);
-
-fun = @(x,y) (-50*(y-cos(x)));
+fun = @(x) sin(x);
 
 
-method = {@trapFunc};
+method = {@eulerfwd, @midpoint};
 
 y0 = 0;
 h = .01;
