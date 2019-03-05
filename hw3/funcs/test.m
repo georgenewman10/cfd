@@ -1,11 +1,9 @@
 clc; clear all; close all;
 
-%fun = @(x) sin(x);
-
-fun = @(x,y) (-50*(y-cos(x)));
+f = @(x,y) (-50*(y-cos(x)));
 
 
-method = {@trapFunc};
+method = {@fwd,@bwd,@mid,@trap,@ab2,@rk2,@rk4};
 
 y0 = 0;
 h = .01;
@@ -13,7 +11,7 @@ n = 1/h;
 
 figure(1)
 for j = 1:length(method)
-    [y,t] = feval(method{j},fun,y0,0,h,n);
-    plot(t,y)
+    [y,t] = feval(method{j},f,y0,0,h,n);
+    plot(t(1:n),y(1:n))
     hold on
 end

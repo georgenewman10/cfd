@@ -1,5 +1,6 @@
-function [yn,tn] = eulerfwd(fh,y0,t0,h,n)
-
+function [yn,tn] = fwd(fh,y0,t0,h,n)
+yn = zeros(n);
+tn = zeros(n);
 yn(1)=y0;
 tn(1)=t0;
 
