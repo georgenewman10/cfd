@@ -1,4 +1,4 @@
-function [yn,tn] = rk4(fh,y0,t0,h,n)
+function [tn,yn] = rk4(fh,y0,t0,h,n)
 yn = zeros(n);
 tn = zeros(n);
 yn(1)=y0;

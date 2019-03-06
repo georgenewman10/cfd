@@ -1,4 +1,4 @@
-function [yn,tn] = bwd(fh,y0,t0,h,n)
+function [tn,yn] = bwd(fh,y0,t0,h,n)
 yn = zeros(n);
 tn = zeros(n);
 yn(1)=y0;
