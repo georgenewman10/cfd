@@ -1,0 +1,650 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>test</title><meta name="generator" content="MATLAB 9.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-03-05"><meta name="DC.source" content="test.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><h2>Contents</h2><div><ul><li><a href="#2">fwd euler</a></li><li><a href="#3">bwd euler</a></li><li><a href="#4">midpoint</a></li><li><a href="#5">AB2</a></li><li><a href="#6">rk2</a></li><li><a href="#7">rk4</a></li></ul></div><pre class="codeinput">clc; clear <span class="string">all</span>; close <span class="string">all</span>;
+
+f = @(t,y) (-10*y);
+y0 = 1;
+t0 = 0;
+<span class="comment">%h = .2;</span>
+<span class="comment">%n = 2/h;</span>
+<span class="comment">%n=round(n);</span>
+
+method = {@fwd,@bwd,@mid,@trap,@ab2,@rk2,@rk4};
+<span class="comment">%{</span>
+</pre><h2 id="2">fwd euler</h2><pre class="codeinput">h = [.04 .08 .25 .4];
+n = 2./h;
+n = round(n);
+figure(1)
+<span class="keyword">for</span> i = 1:length(h)
+    [t,y] = feval(method{1},f,y0,t0,h(i),n);
+    semilogy(t(1:n),abs(y(1:n)))
+    hold <span class="string">on</span>
+<span class="keyword">end</span>
+[to,yo] = ode45(f,[0 1.5],y0);
+semilogy(to,yo,<span class="string">'k'</span>)
+xlim([0 1.5])
+xlabel(<span class="string">'Time, t'</span>)
+ylabel(<span class="string">'|y|'</span>)
+title(<span class="string">'Forward Euler - Stable and Unstable'</span>)
+legend(<span class="string">'h = .04'</span>,<span class="string">'h = .08'</span>,<span class="string">'h = .4'</span>,<span class="string">'h = .5'</span>,<span class="string">'Exact'</span>, <span class="string">'Location'</span>, <span class="string">'southwest'</span>);
+hold <span class="string">off</span>
+print(<span class="string">'fwd_stable_and_unstable'</span>, <span class="string">'-dpng'</span>);
+
+h = [.15 .18];
+n = 2./h;
+n = round(n);
+figure(2)
+<span class="keyword">for</span> i = 1:length(h)
+    [t,y] = feval(method{1},f,y0,t0,h(i),n);
+    semilogy(t(1:n),abs(y(1:n)))
+    hold <span class="string">on</span>
+<span class="keyword">end</span>
+[to,yo] = ode45(f,[0 1.5],y0);
+semilogy(to,yo,<span class="string">'k'</span>)
+xlim([0 1.5])
+xlabel(<span class="string">'Time, t'</span>)
+ylabel(<span class="string">'|y|'</span>)
+title(<span class="string">'Forward Euler - Barely Stable'</span>)
+legend(<span class="string">'h = .15'</span>,<span class="string">'h = .18'</span>,<span class="string">'Exact'</span>, <span class="string">'Location'</span>, <span class="string">'southwest'</span>);
+hold <span class="string">off</span>
+print(<span class="string">'fwd_barely_stable'</span>, <span class="string">'-dpng'</span>)
+
+
+h = [.21 .23];
+n = 2./h;
+n = round(n);
+figure(3)
+<span class="keyword">for</span> i = 1:length(h)
+    [t,y] = feval(method{1},f,y0,t0,h(i),n);
+    semilogy(t(1:n),abs(y(1:n)))
+    hold <span class="string">on</span>
+<span class="keyword">end</span>
+[to,yo] = ode45(f,[0 1.5],y0);
+semilogy(to,yo,<span class="string">'k'</span>)
+xlim([0 1.5])
+xlabel(<span class="string">'Time, t'</span>)
+ylabel(<span class="string">'|y|'</span>)
+title(<span class="string">'Forward Euler - Barely Unstable'</span>)
+legend(<span class="string">'h = .21'</span>,<span class="string">'h = .23'</span>,<span class="string">'Exact'</span>, <span class="string">'Location'</span>, <span class="string">'southwest'</span>);
+hold <span class="string">off</span>
+print(<span class="string">'fwd_barely_unstable'</span>, <span class="string">'-dpng'</span>)
+<span class="comment">%}</span>
+<span class="comment">%{</span>
+</pre><h2 id="3">bwd euler</h2><pre class="codeinput">h = [.05 .1 .2 .3];
+n = 2./h;
+n = round(n);
+figure(2)
+<span class="keyword">for</span> i = 1:length(h)
+    [t,y] = feval(method{2},f,y0,t0,h(i),n);
+    semilogy(t(1:n),abs(y(1:n)))
+    hold <span class="string">on</span>
+<span class="keyword">end</span>
+[to,yo] = ode45(f,[0 1.5],y0);
+semilogy(to,yo,<span class="string">'k'</span>)
+xlim([0 1.5])
+xlabel(<span class="string">'Time, t'</span>)
+ylabel(<span class="string">'|y|'</span>)
+title(<span class="string">'Backward Euler with varying h'</span>)
+legend(<span class="string">'h = .05'</span>, <span class="string">'h = .1'</span>,<span class="string">'h = .2'</span>,<span class="string">'h = .3'</span>,<span class="string">'Exact'</span>, <span class="string">'Location'</span>, <span class="string">'southwest'</span>);
+hold <span class="string">off</span>
+print(<span class="string">'bwd_vs_exact'</span>, <span class="string">'-dpng'</span>)
+<span class="comment">%}</span>
+<span class="comment">%{</span>
+</pre><h2 id="4">midpoint</h2><pre class="codeinput">h = [.05 .1 .2 .3];
+n = 2./h;
+n = round(n);
+figure(2)
+<span class="keyword">for</span> i = 1:length(h)
+    [t,y] = feval(method{3},f,y0,t0,h(i),n);
+    semilogy(t(1:n),abs(y(1:n)))
+    hold <span class="string">on</span>
+<span class="keyword">end</span>
+[to,yo] = ode45(f,[0 1.5],y0);
+semilogy(to,yo,<span class="string">'k'</span>)
+xlim([0 1.5])
+xlabel(<span class="string">'Time, t'</span>)
+ylabel(<span class="string">'|y|'</span>)
+title(<span class="string">'Midpoint with varying h'</span>)
+legend(<span class="string">'h = .05'</span>, <span class="string">'h = .1'</span>,<span class="string">'h = .2'</span>,<span class="string">'h = .3'</span>,<span class="string">'Exact'</span>, <span class="string">'Location'</span>, <span class="string">'southwest'</span>);
+hold <span class="string">off</span>
+print(<span class="string">'mid_vs_exact'</span>, <span class="string">'-dpng'</span>)
+<span class="comment">%}</span>
+<span class="comment">%{</span>
+</pre><h2 id="5">AB2</h2><pre class="codeinput">h = [.02 .05 .15 .25];
+n = 2./h;
+n = round(n);
+figure(1)
+<span class="keyword">for</span> i = 1:length(h)
+    [t,y] = feval(method{5},f,y0,t0,h(i),n);
+    semilogy(t(1:n),abs(y(1:n)))
+    hold <span class="string">on</span>
+<span class="keyword">end</span>
+[to,yo] = ode45(f,[0 1.5],y0);
+semilogy(to,yo,<span class="string">'k'</span>)
+xlim([0 1.5])
+xlabel(<span class="string">'Time, t'</span>)
+ylabel(<span class="string">'|y|'</span>)
+title(<span class="string">'AB2 - Stable and Unstable'</span>)
+legend(<span class="string">'h = .02'</span>,<span class="string">'h = .05'</span>,<span class="string">'h = .15'</span>,<span class="string">'h = .25'</span>,<span class="string">'Exact'</span>, <span class="string">'Location'</span>, <span class="string">'southwest'</span>);
+hold <span class="string">off</span>
+print(<span class="string">'ab2_stable_and_unstable'</span>, <span class="string">'-dpng'</span>);
+
+h = [.08 .09];
+n = 2./h;
+n = round(n);
+figure(2)
+<span class="keyword">for</span> i = 1:length(h)
+    [t,y] = feval(method{5},f,y0,t0,h(i),n);
+    semilogy(t(1:n),abs(y(1:n)))
+    hold <span class="string">on</span>
+<span class="keyword">end</span>
+[to,yo] = ode45(f,[0 1.5],y0);
+semilogy(to,yo,<span class="string">'k'</span>)
+xlim([0 1.5])
+xlabel(<span class="string">'Time, t'</span>)
+ylabel(<span class="string">'|y|'</span>)
+title(<span class="string">'AB2 - Barely Stable'</span>)
+legend(<span class="string">'h = .08'</span>,<span class="string">'h = .09'</span>,<span class="string">'Exact'</span>, <span class="string">'Location'</span>, <span class="string">'southwest'</span>);
+hold <span class="string">off</span>
+print(<span class="string">'ab2_barely_stable'</span>, <span class="string">'-dpng'</span>)
+
+
+h = [.11 .12];
+n = 2./h;
+n = round(n);
+figure(3)
+<span class="keyword">for</span> i = 1:length(h)
+    [t,y] = feval(method{5},f,y0,t0,h(i),n);
+    semilogy(t(1:n),abs(y(1:n)))
+    hold <span class="string">on</span>
+<span class="keyword">end</span>
+[to,yo] = ode45(f,[0 1.5],y0);
+semilogy(to,yo,<span class="string">'k'</span>)
+xlim([0 1.5])
+xlabel(<span class="string">'Time, t'</span>)
+ylabel(<span class="string">'|y|'</span>)
+title(<span class="string">'Forward Euler - Barely Unstable'</span>)
+legend(<span class="string">'h = .11'</span>,<span class="string">'h = .12'</span>,<span class="string">'Exact'</span>, <span class="string">'Location'</span>, <span class="string">'southwest'</span>);
+hold <span class="string">off</span>
+print(<span class="string">'ab2_barely_unstable'</span>, <span class="string">'-dpng'</span>)
+<span class="comment">%}</span>
+<span class="comment">%{</span>
+</pre><h2 id="6">rk2</h2><pre class="codeinput">h = [.04 .08 .3 .4];
+n = 2./h;
+n = round(n);
+figure(1)
+<span class="keyword">for</span> i = 1:length(h)
+    [t,y] = feval(method{6},f,y0,t0,h(i),n);
+    semilogy(t(1:n),abs(y(1:n)))
+    hold <span class="string">on</span>
+<span class="keyword">end</span>
+[to,yo] = ode45(f,[0 1.5],y0);
+semilogy(to,yo,<span class="string">'k'</span>)
+xlim([0 1.5])
+xlabel(<span class="string">'Time, t'</span>)
+ylabel(<span class="string">'|y|'</span>)
+title(<span class="string">'RK2 - Stable and Unstable'</span>)
+legend(<span class="string">'h = .04'</span>,<span class="string">'h = .08'</span>,<span class="string">'h = .3'</span>,<span class="string">'h = .4'</span>,<span class="string">'Exact'</span>, <span class="string">'Location'</span>, <span class="string">'southwest'</span>);
+hold <span class="string">off</span>
+print(<span class="string">'rk2_stable_and_unstable'</span>, <span class="string">'-dpng'</span>);
+
+h = [.18 .19];
+n = 2./h;
+n = round(n);
+figure(2)
+<span class="keyword">for</span> i = 1:length(h)
+    [t,y] = feval(method{6},f,y0,t0,h(i),n);
+    semilogy(t(1:n),abs(y(1:n)))
+    hold <span class="string">on</span>
+<span class="keyword">end</span>
+[to,yo] = ode45(f,[0 1.5],y0);
+semilogy(to,yo,<span class="string">'k'</span>)
+xlim([0 1.5])
+xlabel(<span class="string">'Time, t'</span>)
+ylabel(<span class="string">'|y|'</span>)
+title(<span class="string">'RK2 - Barely Stable'</span>)
+legend(<span class="string">'h = .18'</span>,<span class="string">'h = .19'</span>,<span class="string">'Exact'</span>, <span class="string">'Location'</span>, <span class="string">'southwest'</span>);
+hold <span class="string">off</span>
+print(<span class="string">'rk2_barely_stable'</span>, <span class="string">'-dpng'</span>)
+
+
+h = [.21 .22];
+n = 2./h;
+n = round(n);
+figure(3)
+<span class="keyword">for</span> i = 1:length(h)
+    [t,y] = feval(method{6},f,y0,t0,h(i),n);
+    semilogy(t(1:n),abs(y(1:n)))
+    hold <span class="string">on</span>
+<span class="keyword">end</span>
+[to,yo] = ode45(f,[0 1.5],y0);
+semilogy(to,yo,<span class="string">'k'</span>)
+xlim([0 1.5])
+xlabel(<span class="string">'Time, t'</span>)
+ylabel(<span class="string">'|y|'</span>)
+title(<span class="string">'RK2 - Barely Unstable'</span>)
+legend(<span class="string">'h = .21'</span>,<span class="string">'h = .22'</span>,<span class="string">'Exact'</span>, <span class="string">'Location'</span>, <span class="string">'southwest'</span>);
+hold <span class="string">off</span>
+print(<span class="string">'rk2_barely_unstable'</span>, <span class="string">'-dpng'</span>)
+<span class="comment">%}</span>
+<span class="comment">%{</span>
+</pre><h2 id="7">rk4</h2><pre class="codeinput">h = [.1 .2 .3 .4];
+n = 2./h;
+n = round(n);
+figure(1)
+<span class="keyword">for</span> i = 1:length(h)
+    [t,y] = feval(method{7},f,y0,t0,h(i),n);
+    semilogy(t(1:n),abs(y(1:n)))
+    hold <span class="string">on</span>
+<span class="keyword">end</span>
+[to,yo] = ode45(f,[0 1.5],y0);
+semilogy(to,yo,<span class="string">'k'</span>)
+xlim([0 1.5])
+xlabel(<span class="string">'Time, t'</span>)
+ylabel(<span class="string">'|y|'</span>)
+title(<span class="string">'RK4 - Stable and Unstable'</span>)
+legend(<span class="string">'h = .1'</span>,<span class="string">'h = .2'</span>,<span class="string">'h = .3'</span>,<span class="string">'h = .4'</span>,<span class="string">'Exact'</span>, <span class="string">'Location'</span>, <span class="string">'southwest'</span>);
+hold <span class="string">off</span>
+print(<span class="string">'rk4_stable_and_unstable'</span>, <span class="string">'-dpng'</span>);
+
+h = [.27 .26];
+n = 2./h;
+n = round(n);
+figure(2)
+<span class="keyword">for</span> i = 1:length(h)
+    [t,y] = feval(method{7},f,y0,t0,h(i),n);
+    semilogy(t(1:n),abs(y(1:n)))
+    hold <span class="string">on</span>
+<span class="keyword">end</span>
+[to,yo] = ode45(f,[0 1.5],y0);
+semilogy(to,yo,<span class="string">'k'</span>)
+xlim([0 1.5])
+xlabel(<span class="string">'Time, t'</span>)
+ylabel(<span class="string">'|y|'</span>)
+title(<span class="string">'RK4 - Barely Stable'</span>)
+legend(<span class="string">'h = .27'</span>,<span class="string">'h = .26'</span>,<span class="string">'Exact'</span>, <span class="string">'Location'</span>, <span class="string">'southwest'</span>);
+hold <span class="string">off</span>
+print(<span class="string">'rk4_barely_stable'</span>, <span class="string">'-dpng'</span>)
+
+
+h = [.28 .29];
+n = 2./h;
+n = round(n);
+figure(3)
+<span class="keyword">for</span> i = 1:length(h)
+    [t,y] = feval(method{7},f,y0,t0,h(i),n);
+    semilogy(t(1:n),abs(y(1:n)))
+    hold <span class="string">on</span>
+<span class="keyword">end</span>
+[to,yo] = ode45(f,[0 1.5],y0);
+semilogy(to,yo,<span class="string">'k'</span>)
+xlim([0 1.5])
+xlabel(<span class="string">'Time, t'</span>)
+ylabel(<span class="string">'|y|'</span>)
+title(<span class="string">'RK4 - Barely Unstable'</span>)
+legend(<span class="string">'h = .28'</span>,<span class="string">'h = .29'</span>,<span class="string">'Exact'</span>, <span class="string">'Location'</span>, <span class="string">'southwest'</span>);
+hold <span class="string">off</span>
+print(<span class="string">'rk4_barely_unstable'</span>, <span class="string">'-dpng'</span>)
+<span class="comment">%}</span>
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+clc; clear all; close all;
+
+f = @(t,y) (-10*y);
+y0 = 1;
+t0 = 0;
+%h = .2;
+%n = 2/h;
+%n=round(n);
+
+method = {@fwd,@bwd,@mid,@trap,@ab2,@rk2,@rk4};
+%{
+%%% fwd euler
+h = [.04 .08 .25 .4];
+n = 2./h;
+n = round(n);
+figure(1)
+for i = 1:length(h)
+    [t,y] = feval(method{1},f,y0,t0,h(i),n);
+    semilogy(t(1:n),abs(y(1:n)))
+    hold on
+end
+[to,yo] = ode45(f,[0 1.5],y0);
+semilogy(to,yo,'k')
+xlim([0 1.5])
+xlabel('Time, t')
+ylabel('|y|')
+title('Forward Euler - Stable and Unstable')
+legend('h = .04','h = .08','h = .4','h = .5','Exact', 'Location', 'southwest');
+hold off
+print('fwd_stable_and_unstable', '-dpng');
+
+h = [.15 .18];
+n = 2./h;
+n = round(n);
+figure(2)
+for i = 1:length(h)
+    [t,y] = feval(method{1},f,y0,t0,h(i),n);
+    semilogy(t(1:n),abs(y(1:n)))
+    hold on
+end
+[to,yo] = ode45(f,[0 1.5],y0);
+semilogy(to,yo,'k')
+xlim([0 1.5])
+xlabel('Time, t')
+ylabel('|y|')
+title('Forward Euler - Barely Stable')
+legend('h = .15','h = .18','Exact', 'Location', 'southwest');
+hold off
+print('fwd_barely_stable', '-dpng')
+
+
+h = [.21 .23];
+n = 2./h;
+n = round(n);
+figure(3)
+for i = 1:length(h)
+    [t,y] = feval(method{1},f,y0,t0,h(i),n);
+    semilogy(t(1:n),abs(y(1:n)))
+    hold on
+end
+[to,yo] = ode45(f,[0 1.5],y0);
+semilogy(to,yo,'k')
+xlim([0 1.5])
+xlabel('Time, t')
+ylabel('|y|')
+title('Forward Euler - Barely Unstable')
+legend('h = .21','h = .23','Exact', 'Location', 'southwest');
+hold off
+print('fwd_barely_unstable', '-dpng')
+%}
+%{
+%%% bwd euler
+h = [.05 .1 .2 .3];
+n = 2./h;
+n = round(n);
+figure(2)
+for i = 1:length(h)
+    [t,y] = feval(method{2},f,y0,t0,h(i),n);
+    semilogy(t(1:n),abs(y(1:n)))
+    hold on
+end
+[to,yo] = ode45(f,[0 1.5],y0);
+semilogy(to,yo,'k')
+xlim([0 1.5])
+xlabel('Time, t')
+ylabel('|y|')
+title('Backward Euler with varying h')
+legend('h = .05', 'h = .1','h = .2','h = .3','Exact', 'Location', 'southwest');
+hold off
+print('bwd_vs_exact', '-dpng')
+%}
+%{
+%%% midpoint
+h = [.05 .1 .2 .3];
+n = 2./h;
+n = round(n);
+figure(2)
+for i = 1:length(h)
+    [t,y] = feval(method{3},f,y0,t0,h(i),n);
+    semilogy(t(1:n),abs(y(1:n)))
+    hold on
+end
+[to,yo] = ode45(f,[0 1.5],y0);
+semilogy(to,yo,'k')
+xlim([0 1.5])
+xlabel('Time, t')
+ylabel('|y|')
+title('Midpoint with varying h')
+legend('h = .05', 'h = .1','h = .2','h = .3','Exact', 'Location', 'southwest');
+hold off
+print('mid_vs_exact', '-dpng')
+%}
+%{
+%%% AB2
+h = [.02 .05 .15 .25];
+n = 2./h;
+n = round(n);
+figure(1)
+for i = 1:length(h)
+    [t,y] = feval(method{5},f,y0,t0,h(i),n);
+    semilogy(t(1:n),abs(y(1:n)))
+    hold on
+end
+[to,yo] = ode45(f,[0 1.5],y0);
+semilogy(to,yo,'k')
+xlim([0 1.5])
+xlabel('Time, t')
+ylabel('|y|')
+title('AB2 - Stable and Unstable')
+legend('h = .02','h = .05','h = .15','h = .25','Exact', 'Location', 'southwest');
+hold off
+print('ab2_stable_and_unstable', '-dpng');
+
+h = [.08 .09];
+n = 2./h;
+n = round(n);
+figure(2)
+for i = 1:length(h)
+    [t,y] = feval(method{5},f,y0,t0,h(i),n);
+    semilogy(t(1:n),abs(y(1:n)))
+    hold on
+end
+[to,yo] = ode45(f,[0 1.5],y0);
+semilogy(to,yo,'k')
+xlim([0 1.5])
+xlabel('Time, t')
+ylabel('|y|')
+title('AB2 - Barely Stable')
+legend('h = .08','h = .09','Exact', 'Location', 'southwest');
+hold off
+print('ab2_barely_stable', '-dpng')
+
+
+h = [.11 .12];
+n = 2./h;
+n = round(n);
+figure(3)
+for i = 1:length(h)
+    [t,y] = feval(method{5},f,y0,t0,h(i),n);
+    semilogy(t(1:n),abs(y(1:n)))
+    hold on
+end
+[to,yo] = ode45(f,[0 1.5],y0);
+semilogy(to,yo,'k')
+xlim([0 1.5])
+xlabel('Time, t')
+ylabel('|y|')
+title('Forward Euler - Barely Unstable')
+legend('h = .11','h = .12','Exact', 'Location', 'southwest');
+hold off
+print('ab2_barely_unstable', '-dpng')
+%}
+%{
+%%% rk2
+h = [.04 .08 .3 .4];
+n = 2./h;
+n = round(n);
+figure(1)
+for i = 1:length(h)
+    [t,y] = feval(method{6},f,y0,t0,h(i),n);
+    semilogy(t(1:n),abs(y(1:n)))
+    hold on
+end
+[to,yo] = ode45(f,[0 1.5],y0);
+semilogy(to,yo,'k')
+xlim([0 1.5])
+xlabel('Time, t')
+ylabel('|y|')
+title('RK2 - Stable and Unstable')
+legend('h = .04','h = .08','h = .3','h = .4','Exact', 'Location', 'southwest');
+hold off
+print('rk2_stable_and_unstable', '-dpng');
+
+h = [.18 .19];
+n = 2./h;
+n = round(n);
+figure(2)
+for i = 1:length(h)
+    [t,y] = feval(method{6},f,y0,t0,h(i),n);
+    semilogy(t(1:n),abs(y(1:n)))
+    hold on
+end
+[to,yo] = ode45(f,[0 1.5],y0);
+semilogy(to,yo,'k')
+xlim([0 1.5])
+xlabel('Time, t')
+ylabel('|y|')
+title('RK2 - Barely Stable')
+legend('h = .18','h = .19','Exact', 'Location', 'southwest');
+hold off
+print('rk2_barely_stable', '-dpng')
+
+
+h = [.21 .22];
+n = 2./h;
+n = round(n);
+figure(3)
+for i = 1:length(h)
+    [t,y] = feval(method{6},f,y0,t0,h(i),n);
+    semilogy(t(1:n),abs(y(1:n)))
+    hold on
+end
+[to,yo] = ode45(f,[0 1.5],y0);
+semilogy(to,yo,'k')
+xlim([0 1.5])
+xlabel('Time, t')
+ylabel('|y|')
+title('RK2 - Barely Unstable')
+legend('h = .21','h = .22','Exact', 'Location', 'southwest');
+hold off
+print('rk2_barely_unstable', '-dpng')
+%}
+%{
+%%% rk4
+h = [.1 .2 .3 .4];
+n = 2./h;
+n = round(n);
+figure(1)
+for i = 1:length(h)
+    [t,y] = feval(method{7},f,y0,t0,h(i),n);
+    semilogy(t(1:n),abs(y(1:n)))
+    hold on
+end
+[to,yo] = ode45(f,[0 1.5],y0);
+semilogy(to,yo,'k')
+xlim([0 1.5])
+xlabel('Time, t')
+ylabel('|y|')
+title('RK4 - Stable and Unstable')
+legend('h = .1','h = .2','h = .3','h = .4','Exact', 'Location', 'southwest');
+hold off
+print('rk4_stable_and_unstable', '-dpng');
+
+h = [.27 .26];
+n = 2./h;
+n = round(n);
+figure(2)
+for i = 1:length(h)
+    [t,y] = feval(method{7},f,y0,t0,h(i),n);
+    semilogy(t(1:n),abs(y(1:n)))
+    hold on
+end
+[to,yo] = ode45(f,[0 1.5],y0);
+semilogy(to,yo,'k')
+xlim([0 1.5])
+xlabel('Time, t')
+ylabel('|y|')
+title('RK4 - Barely Stable')
+legend('h = .27','h = .26','Exact', 'Location', 'southwest');
+hold off
+print('rk4_barely_stable', '-dpng')
+
+
+h = [.28 .29];
+n = 2./h;
+n = round(n);
+figure(3)
+for i = 1:length(h)
+    [t,y] = feval(method{7},f,y0,t0,h(i),n);
+    semilogy(t(1:n),abs(y(1:n)))
+    hold on
+end
+[to,yo] = ode45(f,[0 1.5],y0);
+semilogy(to,yo,'k')
+xlim([0 1.5])
+xlabel('Time, t')
+ylabel('|y|')
+title('RK4 - Barely Unstable')
+legend('h = .28','h = .29','Exact', 'Location', 'southwest');
+hold off
+print('rk4_barely_unstable', '-dpng')
+%}
+##### SOURCE END #####
+--></body></html>

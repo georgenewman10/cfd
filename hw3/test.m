@@ -290,8 +290,3 @@ legend('h = .28','h = .29','Exact', 'Location', 'southwest');
 hold off
 print('rk4_barely_unstable', '-dpng')
 %}
-
-
-
-
-
