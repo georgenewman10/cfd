@@ -1,6 +1,6 @@
 clc; clear all; close all;
 
-n = 10;
+n = 10^4;
 h = 1/(n+1);
 tri = full(gallery('tridiag',n,1,-2,1));
 
@@ -19,4 +19,4 @@ x = [0 x 1];
 answer = tri\f';
 answer = [0;answer;2]
 
-plot(x,answer)
+plot(x,answer) 
