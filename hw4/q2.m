@@ -17,6 +17,6 @@ f(n) = f(n) - 2;
 x = [0 x 1];
 
 answer = tri\f';
-answer = [0;answer;2]
+answer = [0;answer;2];
 
 plot(x,answer)
