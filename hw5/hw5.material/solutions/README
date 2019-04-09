@@ -1,0 +1,9 @@
+
+
+  Each file contains the relevant numerical solution for N=25 interior
+  points in [0,2\pi].
+
+  First column is x(i), second column is initial condition,
+  and third column is the numerical solution at time T=4\pi
+
+

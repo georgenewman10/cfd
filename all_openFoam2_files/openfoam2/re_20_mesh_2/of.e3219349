@@ -1,0 +1,33 @@
+
+Currently Loaded Modules:
+  1) intel/18.0.2   2) libfabric/1.7.0   3) impi/18.0.2   4) openfoam/6.0
+
+ 
+
+#0  Foam::error::printStack(Foam::Ostream&) at ??:?
+#1  Foam::sigSegv::sigHandler(int) at ??:?
+#2  ? in "/lib64/libpthread.so.0"
+#3  Foam::particle::stationaryTetGeometry(Foam::Vector<double>&, Foam::Vector<double>&, Foam::Vector<double>&, Foam::Vector<double>&) const at ??:?
+#4  Foam::particle::trackToStationaryTri(Foam::Vector<double> const&, double, int&) at ??:?
+#5  Foam::particle::trackToFace(Foam::Vector<double> const&, double) at ??:?
+#6  Foam::particle::track(Foam::Vector<double> const&, double) at ??:?
+#7  Foam::particle::locate(Foam::Vector<double> const&, Foam::Vector<double> const*, int, bool, Foam::string) at ??:?
+#8  Foam::particle::particle(Foam::polyMesh const&, Foam::Vector<double> const&, int) at ??:?
+#9  Foam::sampledSets::lineFace::calcSamples(Foam::polyMesh const&, Foam::meshSearch const&, Foam::Vector<double> const&, Foam::Vector<double> const&, Foam::DynamicList<Foam::Vector<double>, 0u, 2u, 1u>&, Foam::DynamicList<int, 0u, 2u, 1u>&, Foam::DynamicList<int, 0u, 2u, 1u>&, Foam::DynamicList<int, 0u, 2u, 1u>&, Foam::DynamicList<double, 0u, 2u, 1u>&) at ??:?
+#10  Foam::sampledSets::lineCell::calcSamples(Foam::DynamicList<Foam::Vector<double>, 0u, 2u, 1u>&, Foam::DynamicList<int, 0u, 2u, 1u>&, Foam::DynamicList<int, 0u, 2u, 1u>&, Foam::DynamicList<int, 0u, 2u, 1u>&, Foam::DynamicList<double, 0u, 2u, 1u>&) const at ??:?
+#11  Foam::sampledSets::lineCell::genSamples() at ??:?
+#12  Foam::sampledSets::lineCell::lineCell(Foam::word const&, Foam::polyMesh const&, Foam::meshSearch const&, Foam::dictionary const&) at ??:?
+#13  Foam::sampledSet::addwordConstructorToTable<Foam::sampledSets::lineCell>::New(Foam::word const&, Foam::polyMesh const&, Foam::meshSearch const&, Foam::dictionary const&) at ??:?
+#14  Foam::sampledSet::New(Foam::word const&, Foam::polyMesh const&, Foam::meshSearch const&, Foam::dictionary const&) at ??:?
+#15  void Foam::PtrList<Foam::sampledSet>::read<Foam::sampledSet::iNew>(Foam::Istream&, Foam::sampledSet::iNew const&) at ??:?
+#16  Foam::sampledSets::read(Foam::dictionary const&) at ??:?
+#17  Foam::sampledSets::sampledSets(Foam::word const&, Foam::Time const&, Foam::dictionary const&) at ??:?
+#18  Foam::functionObject::adddictionaryConstructorToTable<Foam::sampledSets>::New(Foam::word const&, Foam::Time const&, Foam::dictionary const&) at ??:?
+#19  Foam::functionObject::New(Foam::word const&, Foam::Time const&, Foam::dictionary const&) at ??:?
+#20  Foam::functionObjectList::read() at ??:?
+#21  Foam::Time::run() const at ??:?
+#22  Foam::Time::loop() at ??:?
+#23  ? at ??:?
+#24  __libc_start_main in "/lib64/libc.so.6"
+#25  ? at ??:?
+/tmp/slurmd/job3219349/slurm_script: line 54: 263589 Segmentation fault      icoFoam
