@@ -1,0 +1,460 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>wave_solve</title><meta name="generator" content="MATLAB 9.5"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-04-09"><meta name="DC.source" content="wave_solve.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><pre class="codeinput"><span class="keyword">function</span> out=wave_solve(c,L,n,sigma,T,M,u0,method)
+
+<span class="comment">%</span>
+<span class="comment">% --inputs--</span>
+<span class="comment">% c:        advective speed</span>
+<span class="comment">% L:        domain size [0,L]</span>
+<span class="comment">% n:        number of interior grid points</span>
+<span class="comment">% sigma:    Courant number</span>
+<span class="comment">% T:        final time</span>
+<span class="comment">% M:        number of solutions recorded between [0,T]</span>
+<span class="comment">% u0:       function that prescribes the initial conditions u0(x)</span>
+<span class="comment">% method:   integration method, one of:</span>
+<span class="comment">%           'forward-upwind'</span>
+<span class="comment">%           'implicit-central'</span>
+<span class="comment">%           'beam-warming'</span>
+<span class="comment">%           'lax-wendroff'</span>
+<span class="comment">%         ...</span>
+<span class="comment">%</span>
+<span class="comment">% --outputs--</span>
+<span class="comment">% out.h   grid spacing</span>
+<span class="comment">% out.k   time step size</span>
+<span class="comment">% out.l   number of time steps taken</span>
+<span class="comment">% out.x:  spatial locations so that out.x(1)=0 and out.x(end)=L</span>
+<span class="comment">% out.TT: out.TT(1)=0 and out.TT(end)=T with</span>
+<span class="comment">%         length(out.TT)=M+2;</span>
+<span class="comment">% out.U:  numerical solution as matrix</span>
+<span class="comment">%         out.U(:,j) is the numerical solution at time out.TT(j)</span>
+<span class="comment">%         with j=1,\dots,M+2</span>
+<span class="comment">%         size(out.U,1)=length(out.x)</span>
+<span class="comment">%         size(out.U,2)=length(out.TT)</span>
+<span class="comment">%</span>
+
+<span class="comment">% set output to empty</span>
+out=[];
+
+<span class="comment">% work on grid</span>
+h=L/(n+1); <span class="comment">% grid spacing recovered from the number of interior points</span>
+out.h = h; <span class="comment">% store it</span>
+
+out.x=[0:h:L]; <span class="comment">% actual grid array, including x=0 and x=L</span>
+N=length(out.x); <span class="comment">% number of overall points</span>
+
+<span class="comment">% time outputs</span>
+out.TT=linspace(0,T,M+2);
+
+<span class="comment">% build the matrix for the updates</span>
+<span class="keyword">switch</span> lower(method)
+
+<span class="keyword">case</span> <span class="string">'forward-upwind'</span>
+
+  <span class="keyword">if</span> ( c&lt;0 )
+      error(<span class="string">'please specify a positive advective speed'</span>);
+  <span class="keyword">end</span>
+
+  A = -diag(ones(N,1),0) - <span class="keyword">...</span>
+      -diag(ones(N-1,1),-1);
+  A(1,n+1)=1; <span class="comment">% periodic boundary on U(1)=U_0</span>
+
+<span class="keyword">case</span> <span class="string">'implicit-central'</span>
+  <span class="keyword">if</span> ( c&lt;0 )
+      error(<span class="string">'please specify a positive advective speed'</span>);
+  <span class="keyword">end</span>
+
+  A = diag(zeros(N,1),0) + diag(ones(N-1,1),1) - diag(ones(N-1,1),-1);
+  <span class="comment">% create a tridiagonal matrix with -1, 0, 1</span>
+  A = .5*A;
+  C = diag(ones(N,1),0); <span class="comment">% create a diagonal matrix with 1</span>
+
+  <span class="comment">% we have to create two separate matrices for implicit central due to it</span>
+  <span class="comment">% being an implicit method</span>
+
+
+  <span class="comment">% set boundary conditions based on finite difference method equation</span>
+  A(1,N-1) = -.5;
+  A(N,2) = .5;
+
+
+<span class="keyword">case</span> <span class="string">'beam-warming'</span>
+  <span class="keyword">if</span> ( c&lt;0 )
+      error(<span class="string">'please specify a positive advective speed'</span>);
+  <span class="keyword">end</span>
+
+
+  A = zeros(N) + diag(ones(N,1),0) * 3 + diag(ones(N-1,1),-1) * -4 + <span class="keyword">...</span>
+      diag(ones(N-2,1),-2);
+  <span class="comment">% create a slightly shifted tridiagonal matrix with 1,-4,3</span>
+  A(1,N-2) = 1;
+  A(1,N-1) = -4;
+  A(2,N-1) = 1;
+  <span class="comment">% set boundary conditions based on finite difference method equation</span>
+
+  B = zeros(N) + diag(ones(N,1),0) * 1 + diag(ones(N-1,1),-1) * -2 + <span class="keyword">...</span>
+      diag(ones(N-2,1),-2);
+  B(1,N-2) = 1;
+  B(1,N-1) = -2;
+  B(2,N-1) = 1;
+  <span class="comment">% create a second tridiagonal matrix. We have to do this due to the</span>
+  <span class="comment">% nature of the beam warming equation having different coefficients</span>
+
+
+
+
+<span class="keyword">case</span> <span class="string">'lax-wendroff'</span>
+  <span class="comment">% create a tridiagonal matrix with -1,0,1</span>
+  A = zeros(N) + diag(ones(N-1,1),1) - diag(ones(N-1,1),-1);
+  A(1,N-1) = -1;
+  A(N,2) = 1;
+
+  <span class="comment">% tridiagonal matrix with 1,-2,1</span>
+  B = zeros(N) -2* diag(ones(N,1),0) + diag(ones(N-1,1),1) + <span class="keyword">...</span>
+      diag(ones(N-1,1),-1);
+  B(1,N-1) = 1;
+  B(N,2) = 1;
+
+
+
+<span class="keyword">otherwise</span>
+  error(<span class="string">'method is unknown'</span>);
+<span class="keyword">end</span>
+
+<span class="comment">% time step size recovered from Courant number</span>
+k=sigma*h/c;
+out.k = k; <span class="comment">% store it</span>
+
+<span class="comment">% initial conditions</span>
+U_=u0(out.x)'; t=0; j=1;
+
+<span class="comment">% store initial conditions</span>
+out.U(:,j)=U_; j=j+1;
+
+<span class="comment">% integrate in time</span>
+l=0;
+<span class="keyword">while</span> t&lt;out.TT(end)
+
+   <span class="comment">% pick the smallest between the time step</span>
+   <span class="comment">% and the time step to get to the next out.TT(j)</span>
+   k_=min([k,(out.TT(j)-t)]);
+   sigma_=k_*c/h;
+
+   fprintf(<span class="string">'Time: %f; Sigma = %f; Time step = %f\n'</span>,t,sigma_,k_);
+
+   <span class="comment">% zero the update</span>
+   dU_=zeros(size(U_));
+
+   <span class="keyword">switch</span> lower(method)
+
+   <span class="keyword">case</span> {<span class="string">'forward-upwind'</span>}
+
+      dU_=sigma_*A*U_; <span class="comment">% Euler fwd step</span>
+
+   <span class="keyword">case</span> {<span class="string">'implicit-central'</span>}
+
+      u_next = ((sigma_*A)+C) \ (U_);
+      dU_ = -sigma_*A*u_next;
+      <span class="comment">% we have to use a temporary variable u_next due to the implicit</span>
+      <span class="comment">% nature of this method. First we must compute our coefficient matrix</span>
+      <span class="comment">% divided by U_, then we plug in the result into U_</span>
+
+   <span class="keyword">case</span> <span class="string">'beam-warming'</span>
+
+      dU_ = (-(sigma_ / 2) * A + (sigma_^2 / 2) * B) * U_;
+      <span class="comment">% multiply the coefficient matrices by sigma/2, then multiply by U_</span>
+      <span class="comment">% to find the majority of the rhs of the beam warming equation</span>
+
+   <span class="keyword">case</span> <span class="string">'lax-wendroff'</span>
+
+      dU_ = (-(sigma_ / 2) * A + (sigma_^2 / 2) * B) * U_;
+      <span class="comment">% multiply the coefficient matrices by sigma/2, sigma^2/2 then</span>
+      <span class="comment">% multiply by U_ to find the majority of the rhs of the lax-wendroff</span>
+      <span class="comment">% equation</span>
+
+   <span class="keyword">otherwise</span>
+     error(<span class="string">'method is unknown'</span>);
+   <span class="keyword">end</span>
+
+   <span class="comment">% update</span>
+   U_=U_+dU_;
+
+   <span class="comment">% advance time to reflect update</span>
+   t=t+k_;
+   l=l+1; <span class="comment">% step counter</span>
+
+   <span class="comment">% store</span>
+   <span class="keyword">if</span> ( t==out.TT(j) )
+     out.TT(j)=t; <span class="comment">% adjust recorded time</span>
+     out.U(:,j)=U_; j=j+1;
+   <span class="keyword">end</span>
+
+<span class="keyword">end</span>
+
+out.l=l; <span class="comment">% number of steps</span>
+</pre><pre class="codeoutput error">Not enough input arguments.
+
+Error in wave_solve (line 37)
+h=L/(n+1); % grid spacing recovered from the number of interior points
+</pre><p class="footer"><br><a href="https://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2018b</a><br></p></div><!--
+##### SOURCE BEGIN #####
+function out=wave_solve(c,L,n,sigma,T,M,u0,method)
+
+%
+% REPLACE_WITH_DASH_DASHinputsREPLACE_WITH_DASH_DASH
+% c:        advective speed
+% L:        domain size [0,L]
+% n:        number of interior grid points
+% sigma:    Courant number
+% T:        final time
+% M:        number of solutions recorded between [0,T]
+% u0:       function that prescribes the initial conditions u0(x)
+% method:   integration method, one of:
+%           'forward-upwind' 
+%           'implicit-central'
+%           'beam-warming'
+%           'lax-wendroff' 
+%         ...
+%
+% REPLACE_WITH_DASH_DASHoutputsREPLACE_WITH_DASH_DASH
+% out.h   grid spacing
+% out.k   time step size
+% out.l   number of time steps taken
+% out.x:  spatial locations so that out.x(1)=0 and out.x(end)=L
+% out.TT: out.TT(1)=0 and out.TT(end)=T with
+%         length(out.TT)=M+2;
+% out.U:  numerical solution as matrix
+%         out.U(:,j) is the numerical solution at time out.TT(j)
+%         with j=1,\dots,M+2
+%         size(out.U,1)=length(out.x)
+%         size(out.U,2)=length(out.TT)
+%
+
+% set output to empty
+out=[];
+
+% work on grid
+h=L/(n+1); % grid spacing recovered from the number of interior points
+out.h = h; % store it
+
+out.x=[0:h:L]; % actual grid array, including x=0 and x=L
+N=length(out.x); % number of overall points
+
+% time outputs
+out.TT=linspace(0,T,M+2);
+
+% build the matrix for the updates
+switch lower(method)
+
+case 'forward-upwind'
+
+  if ( c<0 ) 
+      error('please specify a positive advective speed'); 
+  end
+
+  A = -diag(ones(N,1),0) - ...
+      -diag(ones(N-1,1),-1);
+  A(1,n+1)=1; % periodic boundary on U(1)=U_0
+
+case 'implicit-central'
+  if ( c<0 ) 
+      error('please specify a positive advective speed'); 
+  end
+  
+  A = diag(zeros(N,1),0) + diag(ones(N-1,1),1) - diag(ones(N-1,1),-1);  
+  % create a tridiagonal matrix with -1, 0, 1
+  A = .5*A;
+  C = diag(ones(N,1),0); % create a diagonal matrix with 1
+  
+  % we have to create two separate matrices for implicit central due to it
+  % being an implicit method
+  
+  
+  % set boundary conditions based on finite difference method equation
+  A(1,N-1) = -.5; 
+  A(N,2) = .5;
+  
+ 
+case 'beam-warming'
+  if ( c<0 ) 
+      error('please specify a positive advective speed'); 
+  end
+  
+  
+  A = zeros(N) + diag(ones(N,1),0) * 3 + diag(ones(N-1,1),-1) * -4 + ...
+      diag(ones(N-2,1),-2);
+  % create a slightly shifted tridiagonal matrix with 1,-4,3
+  A(1,N-2) = 1;
+  A(1,N-1) = -4;
+  A(2,N-1) = 1;
+  % set boundary conditions based on finite difference method equation
+  
+  B = zeros(N) + diag(ones(N,1),0) * 1 + diag(ones(N-1,1),-1) * -2 + ...
+      diag(ones(N-2,1),-2);
+  B(1,N-2) = 1;
+  B(1,N-1) = -2;
+  B(2,N-1) = 1;
+  % create a second tridiagonal matrix. We have to do this due to the
+  % nature of the beam warming equation having different coefficients 
+  
+  
+  
+
+case 'lax-wendroff'
+  % create a tridiagonal matrix with -1,0,1
+  A = zeros(N) + diag(ones(N-1,1),1) - diag(ones(N-1,1),-1);
+  A(1,N-1) = -1;
+  A(N,2) = 1;
+  
+  % tridiagonal matrix with 1,-2,1
+  B = zeros(N) -2* diag(ones(N,1),0) + diag(ones(N-1,1),1) + ... 
+      diag(ones(N-1,1),-1);
+  B(1,N-1) = 1;
+  B(N,2) = 1;
+  
+  
+  
+otherwise
+  error('method is unknown');
+end
+
+% time step size recovered from Courant number
+k=sigma*h/c;
+out.k = k; % store it
+
+% initial conditions
+U_=u0(out.x)'; t=0; j=1;
+
+% store initial conditions
+out.U(:,j)=U_; j=j+1;
+
+% integrate in time
+l=0;
+while t<out.TT(end)
+
+   % pick the smallest between the time step
+   % and the time step to get to the next out.TT(j)
+   k_=min([k,(out.TT(j)-t)]);
+   sigma_=k_*c/h;
+
+   fprintf('Time: %f; Sigma = %f; Time step = %f\n',t,sigma_,k_);
+   
+   % zero the update
+   dU_=zeros(size(U_));
+
+   switch lower(method)
+
+   case {'forward-upwind'}
+
+      dU_=sigma_*A*U_; % Euler fwd step
+
+   case {'implicit-central'}
+
+      u_next = ((sigma_*A)+C) \ (U_);
+      dU_ = -sigma_*A*u_next;
+      % we have to use a temporary variable u_next due to the implicit
+      % nature of this method. First we must compute our coefficient matrix
+      % divided by U_, then we plug in the result into U_
+      
+   case 'beam-warming'
+    
+      dU_ = (-(sigma_ / 2) * A + (sigma_^2 / 2) * B) * U_;
+      % multiply the coefficient matrices by sigma/2, then multiply by U_
+      % to find the majority of the rhs of the beam warming equation
+   
+   case 'lax-wendroff'
+
+      dU_ = (-(sigma_ / 2) * A + (sigma_^2 / 2) * B) * U_;
+      % multiply the coefficient matrices by sigma/2, sigma^2/2 then 
+      % multiply by U_ to find the majority of the rhs of the lax-wendroff
+      % equation
+
+   otherwise
+     error('method is unknown');
+   end
+
+   % update
+   U_=U_+dU_;
+
+   % advance time to reflect update
+   t=t+k_;
+   l=l+1; % step counter
+
+   % store
+   if ( t==out.TT(j) )
+     out.TT(j)=t; % adjust recorded time
+     out.U(:,j)=U_; j=j+1;
+   end
+
+end
+
+out.l=l; % number of steps
+
+
+##### SOURCE END #####
+--></body></html>

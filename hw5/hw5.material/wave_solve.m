@@ -61,11 +61,17 @@ case 'implicit-central'
       error('please specify a positive advective speed'); 
   end
   
-  A = diag(zeros(N,1),0) + diag(ones(N-1,1),1) - diag(ones(N-1,1),-1);
+  A = diag(zeros(N,1),0) + diag(ones(N-1,1),1) - diag(ones(N-1,1),-1);  
+  % create a tridiagonal matrix with -1, 0, 1
   A = .5*A;
-  C = diag(ones(N,1),0);
+  C = diag(ones(N,1),0); % create a diagonal matrix with 1
   
-  A(1,N-1) = -.5;
+  % we have to create two separate matrices for implicit central due to it
+  % being an implicit method
+  
+  
+  % set boundary conditions based on finite difference method equation
+  A(1,N-1) = -.5; 
   A(N,2) = .5;
   
  
@@ -75,28 +81,34 @@ case 'beam-warming'
   end
   
   
-  A = zeros(N) + diag(ones(N,1),0) * 3 + diag(ones(N-1,1),-1) * -4 + diag(ones(N-2,1),-2);
+  A = zeros(N) + diag(ones(N,1),0) * 3 + diag(ones(N-1,1),-1) * -4 + ...
+      diag(ones(N-2,1),-2);
+  % create a slightly shifted tridiagonal matrix with 1,-4,3
   A(1,N-2) = 1;
   A(1,N-1) = -4;
   A(2,N-1) = 1;
+  % set boundary conditions based on finite difference method equation
   
-  
-  B = zeros(N) + diag(ones(N,1),0) * 1 + diag(ones(N-1,1),-1) * -2 + diag(ones(N-2,1),-2);
+  B = zeros(N) + diag(ones(N,1),0) * 1 + diag(ones(N-1,1),-1) * -2 + ...
+      diag(ones(N-2,1),-2);
   B(1,N-2) = 1;
   B(1,N-1) = -2;
   B(2,N-1) = 1;
-  
+  % create a second tridiagonal matrix. We have to do this due to the
+  % nature of the beam warming equation having different coefficients 
   
   
   
 
 case 'lax-wendroff'
-  
+  % create a tridiagonal matrix with -1,0,1
   A = zeros(N) + diag(ones(N-1,1),1) - diag(ones(N-1,1),-1);
   A(1,N-1) = -1;
   A(N,2) = 1;
-
-  B = zeros(N) -2* diag(ones(N,1),0) + diag(ones(N-1,1),1) + diag(ones(N-1,1),-1);
+  
+  % tridiagonal matrix with 1,-2,1
+  B = zeros(N) -2* diag(ones(N,1),0) + diag(ones(N-1,1),1) + ... 
+      diag(ones(N-1,1),-1);
   B(1,N-1) = 1;
   B(N,2) = 1;
   
@@ -125,7 +137,7 @@ while t<out.TT(end)
    k_=min([k,(out.TT(j)-t)]);
    sigma_=k_*c/h;
 
-   fprintf('Time: %f; Sigma = %f; Time step = %f\n',t,sigma_,k_);
+   %fprintf('Time: %f; Sigma = %f; Time step = %f\n',t,sigma_,k_);
    
    % zero the update
    dU_=zeros(size(U_));
@@ -140,14 +152,22 @@ while t<out.TT(end)
 
       u_next = ((sigma_*A)+C) \ (U_);
       dU_ = -sigma_*A*u_next;
+      % we have to use a temporary variable u_next due to the implicit
+      % nature of this method. First we must compute our coefficient matrix
+      % divided by U_, then we plug in the result into U_
       
    case 'beam-warming'
     
       dU_ = (-(sigma_ / 2) * A + (sigma_^2 / 2) * B) * U_;
+      % multiply the coefficient matrices by sigma/2, then multiply by U_
+      % to find the majority of the rhs of the beam warming equation
    
    case 'lax-wendroff'
 
       dU_ = (-(sigma_ / 2) * A + (sigma_^2 / 2) * B) * U_;
+      % multiply the coefficient matrices by sigma/2, sigma^2/2 then 
+      % multiply by U_ to find the majority of the rhs of the lax-wendroff
+      % equation
 
    otherwise
      error('method is unknown');
