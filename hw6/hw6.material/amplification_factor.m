@@ -1,7 +1,6 @@
-
 function amplification_factor(fig,fname,tit,Gh,ss)
 
-fs=15;
+fs=12;
 beta=linspace(0,pi,180);
 
 % loop on ss
