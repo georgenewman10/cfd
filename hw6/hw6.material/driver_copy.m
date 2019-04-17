@@ -6,32 +6,29 @@ T=2*2*pi;   % end time
 M=0;        % intermediate solutions
 
 fexact='exact.dat';
-
+%exact = zeros(52,2);
 sigma = [.25, .5, .75];            % Courant number
 n=[25, 50, 100, 200, 400];       % number of interior points
 
-%method='forward-upwind';
+method='forward-upwind';
 %method='implicit-central';
 %method='beam-warming';
-method='lax-wendroff';
+%method='lax-wendroff';
 
 for q = 1:3         % sigma    
     figure
     for j = 1:5     % n
-
-
         % initial conditions
         u0 = @(x) sin(x-T);  % anonymous function
-
         % solve
         out=wave_solve(c,L,n(j),sigma(q),T,M,u0,method);
-        
-        
         
         % plot
         xx=linspace(0,L,1000);
         for i=1:size(out.U,2)
-          exact(:,i)=u0(out.x'-out.TT(i))';
+          exact(:,i)=u0(xx-out.TT(i))';
+          
+          exact_U = u0(out.x-out.TT(i));
           
           %plot(out.x,out.U(:,i),...
           %     xx,u0(xx-out.TT(i)),'r-');
@@ -48,7 +45,7 @@ for q = 1:3         % sigma
         hold on
         
         
-        e(q,j) = (1/n(j)+2) * norm(out.U-exact);
+        e(q,j) = (1/(n(j)+2)) * norm(out.U,2-exact);
     
 
         % dump
