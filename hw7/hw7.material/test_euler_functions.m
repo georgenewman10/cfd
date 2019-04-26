@@ -1,15 +1,13 @@
-clear all
-close all
-clc
+clear all; close all; clc
 
 g = 1.4;
 
 load U.mat;
 
 for i=1:size(U,1)
-  %W(i,:)=U2W(U(i,:),g);
-  %lambda(i,:)=eigsEuler(U(i,:),g);
-  %F(i,:)=fluxEuler(U(i,:),g);
+  W(i,:)=U2W(U(i,:),g);
+  lambda(i,:)=eigsEuler(U(i,:),g);
+  F(i,:)=fluxEuler(U(i,:),g);
 end
 
 fprintf('\n\n--- W ----');
