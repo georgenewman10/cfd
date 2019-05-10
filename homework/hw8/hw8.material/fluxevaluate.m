@@ -1,6 +1,6 @@
 function F=fluxevaluate(fh,kh,U,uL,uR,method)
 
-%
+
 % function F=fluxevaluate(fh,kh,U,uL,uR,method)
 %
 % fh: function handle to the flux function
@@ -43,17 +43,77 @@ case 'first-order-upwind'
   
 
 case 'lax-wendroff'
+     U = [uL; U; uR];             % set ghost cells
+     N_ = N+2;
 
-   % code here
+     F(1) = 1;
+    %F(N_) = 1;
+    
+    for i = 2:N_-1
+        a = (U(i) + U(i+1)) / 2; 
+        b = (U(i-1) + U(i))/2;
+        F(i) = 0.5*feval(fh,U(i)) + 0.5*feval(fh,U(i-1)) + 0.5*kh*a*feval(fh,U(i)) - 0.5*kh*b*feval(fh,U(i-1)); 
+    end
+    
+    if ( U(1)>0 ) F(1)=feval(fh,uL); end;
+    if ( U(1)<0 ) F(1)=feval(fh,U(1)); end;
 
+    % right
+    if ( U(N)>0 ) F(N+1)=feval(fh,U(N)); end;
+    if ( U(N)<0 ) F(N+1)=feval(fh,uR); end;
 
+    
 case 'richtmyer'
 
-   % code here
+    U = [uL; U; uR];
+% BCs
+
+% left
+    if ( U(1)>0 ) F(1)=feval(fh,uL); end;
+    if ( U(1)<0 ) F(1)=feval(fh,U(1)); end;
+
+% right
+    if ( U(N)>0 ) F(N+1)=feval(fh,U(N)); end;
+    if ( U(N)<0 ) F(N+1)=feval(fh,uR); end;
+
+    for i = 2 : N+1 
+        a = (U(i+1) + U(i))/2; % U (i+0.5) 
+        b = (U(i-1) + U(i))/2; % U (i-0.5)
+
+
+        if U(i) > 0
+            F(i) = a - kh * (feval(fh,U(i+1))-feval(fh,U(i))) / 2; 
+            F(i) = feval(fh,F(i));
+        end
+        if U(i) < 0 
+            F(i) = b - kh * (feval(fh,U(i))-feval(fh,U(i-1))) / 2; 
+            F(i) = feval(fh,F(i));
+        end
+    end
+    
 
 case 'maccormack'
+    U = [uL; U; uR];
+% BCs
 
-   % code here
+% left
+    if ( U(1)>0 ) F(1)=feval(fh,uL); end;
+    if ( U(1)<0 ) F(1)=feval(fh,U(1)); end;
+
+% right
+    if ( U(N)>0 ) F(N+1)=feval(fh,U(N)); end;
+    if ( U(N)<0 ) F(N+1)=feval(fh,uR); end;
+
+    for i = 2 : N + 1
+        if U(i) > 0 % =
+            temp = U(i) - kh*(feval(fh,U(i+1))-feval(fh,U(i)));
+            F(i) = (feval(fh,U(i+1)) + feval(fh,temp))/2; 
+        end
+        if U(i) < 0 % 
+            temp = U(i-1) - kh*(feval(fh,U(i)) - feval(fh,U(i-1)));
+            F(i) = (feval(fh,U(i)) + feval(fh,temp))/2;
+        end 
+    end
 
 otherwise
   error('method is unknown');

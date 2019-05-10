@@ -55,6 +55,6 @@ while t<T
    U_ = U_ - (k/h)*dF_;
    t = t+k; l=l+1;
 
-   fprintf('%5.5d, t=%e, h=%e\n',l,t,k);
+   %fprintf('%5.5d, t=%e, h=%e\n',l,t,k);
 
 end
