@@ -414,7 +414,7 @@ convertToMeters 1.0;
 define(c, 1.0)
 
 //Angle of attack (in radian)
-define(alpha, 0.3)
+define(alpha, 0.0)
 
 //NACA digits
 define(NACA1, 4)
@@ -459,7 +459,7 @@ define(Naf, 99)
 //Cell expansion ratios
 
 //Expansion ratio in y direction
-define(E1, 200)
+define(E1, 100)
 
 //Expansion ratio in downstream side
 define(E2, 100)
