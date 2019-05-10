@@ -1,0 +1,160 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>q2_wrap</title><meta name="generator" content="MATLAB 9.2"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-05-09"><meta name="DC.source" content="q2_wrap.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><pre class="codeinput">clear <span class="string">all</span>; close <span class="string">all</span>; clc
+<span class="comment">% ready to submit</span>
+
+<span class="comment">%method='first-order-upwind';</span>
+<span class="comment">%method='lax-wendroff';</span>
+<span class="comment">%method='richtmyer';</span>
+<span class="comment">%method='maccormack';</span>
+<span class="comment">%uh=@step; uL=2; uR=1; L=2; N=50; T=2/3; name='step';</span>
+uh=@hump; uL=1; uR=1; L=2; N=50; T=1/pi-1e-5; name=<span class="string">'hump'</span>;
+
+
+method = {<span class="string">'first-order-upwind'</span> <span class="string">'lax-wendroff'</span> <span class="string">'richtmyer'</span> <span class="string">'maccormack'</span>};
+line = {<span class="string">'ro'</span>,<span class="string">'bo'</span>,<span class="string">'go'</span>,<span class="string">'mo'</span>};
+N = [50 200 800];
+
+fh=@burgers; <span class="comment">% exact flux function f=f(u)</span>
+
+
+
+sigma=0.75;
+
+<span class="keyword">for</span> i = 1:3       <span class="comment">% loop through n</span>
+    figure
+    <span class="keyword">for</span> j = 1:4   <span class="comment">% loop through methods</span>
+        [xm,U]=advanceconservative(uh,fh,uL,uR,L,sigma,N(i),T,method{j});
+        x_=linspace(-L,L,10000);
+        [xi,ui]=burgersanalytical(x_,uh,T);
+        plot(xm,U,line{j});
+        hold <span class="string">on</span>
+    <span class="keyword">end</span>
+
+    <span class="comment">%axis([-0.5,L,0,2.5]);</span>
+    plot(xi, feval(uh,xi),<span class="string">'b-'</span>)
+    hold <span class="string">on</span>
+    plot(xi, ui, <span class="string">'k-'</span>)
+    hold <span class="string">off</span>
+
+    title(sprintf(<span class="string">'N = %d'</span>,N(i)));
+    xlabel(<span class="string">'x'</span>); ylabel(<span class="string">'u(x), U^n_i'</span>);
+    legend(<span class="string">'First Order Upwind'</span>,<span class="string">'Lax-Wendroff'</span>,<span class="string">'Richtmyer'</span>,<span class="string">'McCormack'</span>,<span class="string">'analytical'</span>);
+<span class="keyword">end</span>
+</pre><img vspace="5" hspace="5" src="q2_wrap_01.png" style="width:560px;height:420px;" alt=""> <img vspace="5" hspace="5" src="q2_wrap_02.png" style="width:560px;height:420px;" alt=""> <img vspace="5" hspace="5" src="q2_wrap_03.png" style="width:560px;height:420px;" alt=""> <p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2017a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+clear all; close all; clc
+% ready to submit
+
+%method='first-order-upwind';
+%method='lax-wendroff';
+%method='richtmyer';
+%method='maccormack';
+%uh=@step; uL=2; uR=1; L=2; N=50; T=2/3; name='step';
+uh=@hump; uL=1; uR=1; L=2; N=50; T=1/pi-1e-5; name='hump';
+
+
+method = {'first-order-upwind' 'lax-wendroff' 'richtmyer' 'maccormack'};
+line = {'ro','bo','go','mo'};
+N = [50 200 800];
+
+fh=@burgers; % exact flux function f=f(u)
+
+
+
+sigma=0.75;
+
+for i = 1:3       % loop through n
+    figure
+    for j = 1:4   % loop through methods
+        [xm,U]=advanceconservative(uh,fh,uL,uR,L,sigma,N(i),T,method{j});
+        x_=linspace(-L,L,10000); 
+        [xi,ui]=burgersanalytical(x_,uh,T);
+        plot(xm,U,line{j});
+        hold on            
+    end
+    
+    %axis([-0.5,L,0,2.5]);
+    plot(xi, feval(uh,xi),'b-')
+    hold on
+    plot(xi, ui, 'k-')
+    hold off
+    
+    title(sprintf('N = %d',N(i)));
+    xlabel('x'); ylabel('u(x), U^n_i');
+    legend('First Order Upwind','Lax-Wendroff','Richtmyer','McCormack','analytical');
+end
+
+
+        
+
+
+
+##### SOURCE END #####
+--></body></html>

@@ -1,6 +1,6 @@
 function F=fluxevaluate(fh,kh,U,uL,uR,method)
 
-%
+
 % function F=fluxevaluate(fh,kh,U,uL,uR,method)
 %
 % fh: function handle to the flux function
@@ -45,19 +45,8 @@ case 'first-order-upwind'
 case 'lax-wendroff'
      U = [uL; U; uR];             % set ghost cells
      N_ = N+2;
-%{     
-%    for i = 1:N_
-%        [fexact_(i),l] = feval(fh,U(i));
-%    end
-%    
-%    for i=2:N_
-%        F(i) = feval(fh,U(i));
-%    end
-%    
-%}   
 
-    
-    F(1) = 1;
+     F(1) = 1;
     %F(N_) = 1;
     
     for i = 2:N_-1
@@ -65,8 +54,6 @@ case 'lax-wendroff'
         b = (U(i-1) + U(i))/2;
         F(i) = 0.5*feval(fh,U(i)) + 0.5*feval(fh,U(i-1)) + 0.5*kh*a*feval(fh,U(i)) - 0.5*kh*b*feval(fh,U(i-1)); 
     end
-
-    
     
     if ( U(1)>0 ) F(1)=feval(fh,uL); end;
     if ( U(1)<0 ) F(1)=feval(fh,U(1)); end;
@@ -75,9 +62,7 @@ case 'lax-wendroff'
     if ( U(N)>0 ) F(N+1)=feval(fh,U(N)); end;
     if ( U(N)<0 ) F(N+1)=feval(fh,uR); end;
 
-
-
-
+    
 case 'richtmyer'
 
     U = [uL; U; uR];
@@ -107,11 +92,6 @@ case 'richtmyer'
     end
     
 
-
-    
-    
-   
-
 case 'maccormack'
     U = [uL; U; uR];
 % BCs
@@ -135,11 +115,6 @@ case 'maccormack'
         end 
     end
 
-    
-  
-    
-    
-    
 otherwise
   error('method is unknown');
 

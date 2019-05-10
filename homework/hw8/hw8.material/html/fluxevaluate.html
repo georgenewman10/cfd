@@ -1,0 +1,319 @@
+
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+   <!--
+This HTML was auto-generated from MATLAB code.
+To make changes, update the MATLAB code and republish this document.
+      --><title>fluxevaluate</title><meta name="generator" content="MATLAB 9.2"><link rel="schema.DC" href="http://purl.org/dc/elements/1.1/"><meta name="DC.date" content="2019-05-09"><meta name="DC.source" content="fluxevaluate.m"><style type="text/css">
+html,body,div,span,applet,object,iframe,h1,h2,h3,h4,h5,h6,p,blockquote,pre,a,abbr,acronym,address,big,cite,code,del,dfn,em,font,img,ins,kbd,q,s,samp,small,strike,strong,sub,sup,tt,var,b,u,i,center,dl,dt,dd,ol,ul,li,fieldset,form,label,legend,table,caption,tbody,tfoot,thead,tr,th,td{margin:0;padding:0;border:0;outline:0;font-size:100%;vertical-align:baseline;background:transparent}body{line-height:1}ol,ul{list-style:none}blockquote,q{quotes:none}blockquote:before,blockquote:after,q:before,q:after{content:'';content:none}:focus{outine:0}ins{text-decoration:none}del{text-decoration:line-through}table{border-collapse:collapse;border-spacing:0}
+
+html { min-height:100%; margin-bottom:1px; }
+html body { height:100%; margin:0px; font-family:Arial, Helvetica, sans-serif; font-size:10px; color:#000; line-height:140%; background:#fff none; overflow-y:scroll; }
+html body td { vertical-align:top; text-align:left; }
+
+h1 { padding:0px; margin:0px 0px 25px; font-family:Arial, Helvetica, sans-serif; font-size:1.5em; color:#d55000; line-height:100%; font-weight:normal; }
+h2 { padding:0px; margin:0px 0px 8px; font-family:Arial, Helvetica, sans-serif; font-size:1.2em; color:#000; font-weight:bold; line-height:140%; border-bottom:1px solid #d6d4d4; display:block; }
+h3 { padding:0px; margin:0px 0px 5px; font-family:Arial, Helvetica, sans-serif; font-size:1.1em; color:#000; font-weight:bold; line-height:140%; }
+
+a { color:#005fce; text-decoration:none; }
+a:hover { color:#005fce; text-decoration:underline; }
+a:visited { color:#004aa0; text-decoration:none; }
+
+p { padding:0px; margin:0px 0px 20px; }
+img { padding:0px; margin:0px 0px 20px; border:none; }
+p img, pre img, tt img, li img, h1 img, h2 img { margin-bottom:0px; } 
+
+ul { padding:0px; margin:0px 0px 20px 23px; list-style:square; }
+ul li { padding:0px; margin:0px 0px 7px 0px; }
+ul li ul { padding:5px 0px 0px; margin:0px 0px 7px 23px; }
+ul li ol li { list-style:decimal; }
+ol { padding:0px; margin:0px 0px 20px 0px; list-style:decimal; }
+ol li { padding:0px; margin:0px 0px 7px 23px; list-style-type:decimal; }
+ol li ol { padding:5px 0px 0px; margin:0px 0px 7px 0px; }
+ol li ol li { list-style-type:lower-alpha; }
+ol li ul { padding-top:7px; }
+ol li ul li { list-style:square; }
+
+.content { font-size:1.2em; line-height:140%; padding: 20px; }
+
+pre, code { font-size:12px; }
+tt { font-size: 1.2em; }
+pre { margin:0px 0px 20px; }
+pre.codeinput { padding:10px; border:1px solid #d3d3d3; background:#f7f7f7; }
+pre.codeoutput { padding:10px 11px; margin:0px 0px 20px; color:#4c4c4c; }
+pre.error { color:red; }
+
+@media print { pre.codeinput, pre.codeoutput { word-wrap:break-word; width:100%; } }
+
+span.keyword { color:#0000FF }
+span.comment { color:#228B22 }
+span.string { color:#A020F0 }
+span.untermstring { color:#B20000 }
+span.syscmd { color:#B28C00 }
+
+.footer { width:auto; padding:10px 0px; margin:25px 0px 0px; border-top:1px dotted #878787; font-size:0.8em; line-height:140%; font-style:italic; color:#878787; text-align:left; float:none; }
+.footer p { margin:0px; }
+.footer a { color:#878787; }
+.footer a:hover { color:#878787; text-decoration:underline; }
+.footer a:visited { color:#878787; }
+
+table th { padding:7px 5px; text-align:left; vertical-align:middle; border: 1px solid #d6d4d4; font-weight:bold; }
+table td { padding:7px 5px; text-align:left; vertical-align:top; border:1px solid #d6d4d4; }
+
+
+
+
+
+  </style></head><body><div class="content"><pre class="codeinput"><span class="keyword">function</span> F=fluxevaluate(fh,kh,U,uL,uR,method)
+
+
+<span class="comment">% function F=fluxevaluate(fh,kh,U,uL,uR,method)</span>
+<span class="comment">%</span>
+<span class="comment">% fh: function handle to the flux function</span>
+<span class="comment">% kh: k/h factor</span>
+<span class="comment">% U:  solution at time t = t_n</span>
+<span class="comment">% uL: left boundary condition u(-L)=uL</span>
+<span class="comment">% uR: right boundary condotion u(+L)=uR</span>
+<span class="comment">% method: one of 'first-order-upwind', 'law-wendroff',</span>
+<span class="comment">%                'richtmyer', 'maccormack'</span>
+
+N=length(U);
+F=zeros(N+1,1);
+
+<span class="comment">%</span>
+<span class="comment">%</span>
+<span class="comment">%    F(1)  F(2)   F(3)       F(i-1)  F(i)   F(i+1)            F(N)   F(N+1)</span>
+<span class="comment">%    |------|------|--- //  ---|-------|------|------|--- // ---|-----|</span>
+<span class="comment">%       1      2                  i-1      i     i+1               N</span>
+<span class="comment">%   -L                                                                L</span>
+<span class="comment">%</span>
+
+<span class="keyword">switch</span> lower(method)
+<span class="keyword">case</span> <span class="string">'first-order-upwind'</span>
+
+  <span class="comment">% F(i) = F^L_i, the left numerical flux</span>
+  <span class="keyword">for</span> i=2:N
+     <span class="keyword">if</span> ( U(i)&gt;0 ) F(i)=feval(fh,U(i-1)); <span class="keyword">end</span>;
+     <span class="keyword">if</span> ( U(i)&lt;0 ) F(i)=feval(fh,U(i)); <span class="keyword">end</span>;
+  <span class="keyword">end</span>
+
+  <span class="comment">% BCs</span>
+
+  <span class="comment">% left</span>
+  <span class="keyword">if</span> ( U(1)&gt;0 ) F(1)=feval(fh,uL); <span class="keyword">end</span>;
+  <span class="keyword">if</span> ( U(1)&lt;0 ) F(1)=feval(fh,U(1)); <span class="keyword">end</span>;
+
+  <span class="comment">% right</span>
+  <span class="keyword">if</span> ( U(N)&gt;0 ) F(N+1)=feval(fh,U(N)); <span class="keyword">end</span>;
+  <span class="keyword">if</span> ( U(N)&lt;0 ) F(N+1)=feval(fh,uR); <span class="keyword">end</span>;
+
+
+<span class="keyword">case</span> <span class="string">'lax-wendroff'</span>
+     U = [uL; U; uR];             <span class="comment">% set ghost cells</span>
+     N_ = N+2;
+
+     F(1) = 1;
+    <span class="comment">%F(N_) = 1;</span>
+
+    <span class="keyword">for</span> i = 2:N_-1
+        a = (U(i) + U(i+1)) / 2;
+        b = (U(i-1) + U(i))/2;
+        F(i) = 0.5*feval(fh,U(i)) + 0.5*feval(fh,U(i-1)) + 0.5*kh*a*feval(fh,U(i)) - 0.5*kh*b*feval(fh,U(i-1));
+    <span class="keyword">end</span>
+
+    <span class="keyword">if</span> ( U(1)&gt;0 ) F(1)=feval(fh,uL); <span class="keyword">end</span>;
+    <span class="keyword">if</span> ( U(1)&lt;0 ) F(1)=feval(fh,U(1)); <span class="keyword">end</span>;
+
+    <span class="comment">% right</span>
+    <span class="keyword">if</span> ( U(N)&gt;0 ) F(N+1)=feval(fh,U(N)); <span class="keyword">end</span>;
+    <span class="keyword">if</span> ( U(N)&lt;0 ) F(N+1)=feval(fh,uR); <span class="keyword">end</span>;
+
+
+<span class="keyword">case</span> <span class="string">'richtmyer'</span>
+
+    U = [uL; U; uR];
+<span class="comment">% BCs</span>
+
+<span class="comment">% left</span>
+    <span class="keyword">if</span> ( U(1)&gt;0 ) F(1)=feval(fh,uL); <span class="keyword">end</span>;
+    <span class="keyword">if</span> ( U(1)&lt;0 ) F(1)=feval(fh,U(1)); <span class="keyword">end</span>;
+
+<span class="comment">% right</span>
+    <span class="keyword">if</span> ( U(N)&gt;0 ) F(N+1)=feval(fh,U(N)); <span class="keyword">end</span>;
+    <span class="keyword">if</span> ( U(N)&lt;0 ) F(N+1)=feval(fh,uR); <span class="keyword">end</span>;
+
+    <span class="keyword">for</span> i = 2 : N+1
+        a = (U(i+1) + U(i))/2; <span class="comment">% U (i+0.5)</span>
+        b = (U(i-1) + U(i))/2; <span class="comment">% U (i-0.5)</span>
+
+
+        <span class="keyword">if</span> U(i) &gt; 0
+            F(i) = a - kh * (feval(fh,U(i+1))-feval(fh,U(i))) / 2;
+            F(i) = feval(fh,F(i));
+        <span class="keyword">end</span>
+        <span class="keyword">if</span> U(i) &lt; 0
+            F(i) = b - kh * (feval(fh,U(i))-feval(fh,U(i-1))) / 2;
+            F(i) = feval(fh,F(i));
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+
+
+<span class="keyword">case</span> <span class="string">'maccormack'</span>
+    U = [uL; U; uR];
+<span class="comment">% BCs</span>
+
+<span class="comment">% left</span>
+    <span class="keyword">if</span> ( U(1)&gt;0 ) F(1)=feval(fh,uL); <span class="keyword">end</span>;
+    <span class="keyword">if</span> ( U(1)&lt;0 ) F(1)=feval(fh,U(1)); <span class="keyword">end</span>;
+
+<span class="comment">% right</span>
+    <span class="keyword">if</span> ( U(N)&gt;0 ) F(N+1)=feval(fh,U(N)); <span class="keyword">end</span>;
+    <span class="keyword">if</span> ( U(N)&lt;0 ) F(N+1)=feval(fh,uR); <span class="keyword">end</span>;
+
+    <span class="keyword">for</span> i = 2 : N + 1
+        <span class="keyword">if</span> U(i) &gt; 0 <span class="comment">% =</span>
+            temp = U(i) - kh*(feval(fh,U(i+1))-feval(fh,U(i)));
+            F(i) = (feval(fh,U(i+1)) + feval(fh,temp))/2;
+        <span class="keyword">end</span>
+        <span class="keyword">if</span> U(i) &lt; 0 <span class="comment">%</span>
+            temp = U(i-1) - kh*(feval(fh,U(i)) - feval(fh,U(i-1)));
+            F(i) = (feval(fh,U(i)) + feval(fh,temp))/2;
+        <span class="keyword">end</span>
+    <span class="keyword">end</span>
+
+<span class="keyword">otherwise</span>
+  error(<span class="string">'method is unknown'</span>);
+
+<span class="keyword">end</span>
+</pre><pre class="codeoutput error">Not enough input arguments.
+Error in fluxevaluate (line 14)
+N=length(U);</pre><p class="footer"><br><a href="http://www.mathworks.com/products/matlab/">Published with MATLAB&reg; R2017a</a><br></p></div><!--
+##### SOURCE BEGIN #####
+function F=fluxevaluate(fh,kh,U,uL,uR,method)
+
+
+% function F=fluxevaluate(fh,kh,U,uL,uR,method)
+%
+% fh: function handle to the flux function
+% kh: k/h factor
+% U:  solution at time t = t_n
+% uL: left boundary condition u(-L)=uL
+% uR: right boundary condotion u(+L)=uR
+% method: one of 'first-order-upwind', 'law-wendroff',
+%                'richtmyer', 'maccormack'
+
+N=length(U);
+F=zeros(N+1,1);
+
+%
+%     
+%    F(1)  F(2)   F(3)       F(i-1)  F(i)   F(i+1)            F(N)   F(N+1)
+%    |REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH|REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH|REPLACE_WITH_DASH_DASH- //  REPLACE_WITH_DASH_DASH-|REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH-|REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH|REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH|REPLACE_WITH_DASH_DASH- // REPLACE_WITH_DASH_DASH-|REPLACE_WITH_DASH_DASHREPLACE_WITH_DASH_DASH-|
+%       1      2                  i-1      i     i+1               N
+%   -L                                                                L   
+%
+
+switch lower(method)
+case 'first-order-upwind'
+
+  % F(i) = F^L_i, the left numerical flux
+  for i=2:N
+     if ( U(i)>0 ) F(i)=feval(fh,U(i-1)); end;
+     if ( U(i)<0 ) F(i)=feval(fh,U(i)); end;
+  end
+
+  % BCs
+
+  % left
+  if ( U(1)>0 ) F(1)=feval(fh,uL); end;
+  if ( U(1)<0 ) F(1)=feval(fh,U(1)); end;
+
+  % right
+  if ( U(N)>0 ) F(N+1)=feval(fh,U(N)); end;
+  if ( U(N)<0 ) F(N+1)=feval(fh,uR); end;
+  
+
+case 'lax-wendroff'
+     U = [uL; U; uR];             % set ghost cells
+     N_ = N+2;
+
+     F(1) = 1;
+    %F(N_) = 1;
+    
+    for i = 2:N_-1
+        a = (U(i) + U(i+1)) / 2; 
+        b = (U(i-1) + U(i))/2;
+        F(i) = 0.5*feval(fh,U(i)) + 0.5*feval(fh,U(i-1)) + 0.5*kh*a*feval(fh,U(i)) - 0.5*kh*b*feval(fh,U(i-1)); 
+    end
+    
+    if ( U(1)>0 ) F(1)=feval(fh,uL); end;
+    if ( U(1)<0 ) F(1)=feval(fh,U(1)); end;
+
+    % right
+    if ( U(N)>0 ) F(N+1)=feval(fh,U(N)); end;
+    if ( U(N)<0 ) F(N+1)=feval(fh,uR); end;
+
+    
+case 'richtmyer'
+
+    U = [uL; U; uR];
+% BCs
+
+% left
+    if ( U(1)>0 ) F(1)=feval(fh,uL); end;
+    if ( U(1)<0 ) F(1)=feval(fh,U(1)); end;
+
+% right
+    if ( U(N)>0 ) F(N+1)=feval(fh,U(N)); end;
+    if ( U(N)<0 ) F(N+1)=feval(fh,uR); end;
+
+    for i = 2 : N+1 
+        a = (U(i+1) + U(i))/2; % U (i+0.5) 
+        b = (U(i-1) + U(i))/2; % U (i-0.5)
+
+
+        if U(i) > 0
+            F(i) = a - kh * (feval(fh,U(i+1))-feval(fh,U(i))) / 2; 
+            F(i) = feval(fh,F(i));
+        end
+        if U(i) < 0 
+            F(i) = b - kh * (feval(fh,U(i))-feval(fh,U(i-1))) / 2; 
+            F(i) = feval(fh,F(i));
+        end
+    end
+    
+
+case 'maccormack'
+    U = [uL; U; uR];
+% BCs
+
+% left
+    if ( U(1)>0 ) F(1)=feval(fh,uL); end;
+    if ( U(1)<0 ) F(1)=feval(fh,U(1)); end;
+
+% right
+    if ( U(N)>0 ) F(N+1)=feval(fh,U(N)); end;
+    if ( U(N)<0 ) F(N+1)=feval(fh,uR); end;
+
+    for i = 2 : N + 1
+        if U(i) > 0 % =
+            temp = U(i) - kh*(feval(fh,U(i+1))-feval(fh,U(i)));
+            F(i) = (feval(fh,U(i+1)) + feval(fh,temp))/2; 
+        end
+        if U(i) < 0 % 
+            temp = U(i-1) - kh*(feval(fh,U(i)) - feval(fh,U(i-1)));
+            F(i) = (feval(fh,U(i)) + feval(fh,temp))/2;
+        end 
+    end
+
+otherwise
+  error('method is unknown');
+
+end
+
+
+
+##### SOURCE END #####
+--></body></html>
