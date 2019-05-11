@@ -22,7 +22,7 @@ boundaryField
 {
     inlet
     {
-        freestreamValue uniform 15;
+        freestreamValue uniform 1;
         type            freestream;
     }
 

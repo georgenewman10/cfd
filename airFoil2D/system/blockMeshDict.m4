@@ -414,21 +414,21 @@ convertToMeters 1.0;
 define(c, 1.0)
 
 //Angle of attack (in radian)
-define(alpha, 0.0)
+define(alpha, 0)
 
 //NACA digits
-define(NACA1, 4)
-define(NACA2, 4)
+define(NACA1, 0)
+define(NACA2, 0)
 define(NACA3, 1)
 define(NACA4, 2)
 
 //Mesh
 
 //Height of mesh in y direction
-define(L1, 8.0)
+define(L1, 4.0)
 
 //Length of downstream
-define(L2, 16.0)
+define(L2, 5)
 
 //Foil depth in z direction perpendicular to x-y surface
 define(L3, 0.5)
@@ -439,19 +439,19 @@ define(sc, 1.0)
 //Number of cells and points at each direction and element
 
 //Number of cells in y direction
-define(Nl1, 50)
+define(Nl1, 250)
 
 //Number of cells in downstream
-define(Nl2, 90)
+define(Nl2, 3)
 
 //Number of cells in z direction
 define(Nl3, 1)
 
-//Number of meshes on the front part of airfoil edges p8-p9 and p8-p10b TODO calc it based on number of elements on the spline
+//Number of meshes on the front part of airfoil edges p8-p9 and p8-p10b
 define(Nl4, 12)
 
-//Number of meshes on the back part of airfoil edges p9-p11 and p10-p11 TODO calc it based on number of elements on the spline
-define(Nl5, 10)
+//Number of meshes on the back part of airfoil edges p9-p11 and p10-p11
+define(Nl5, 12)
 
 //Number of interpolation points along the airfoil for defining the splines
 define(Naf, 99)
@@ -459,10 +459,10 @@ define(Naf, 99)
 //Cell expansion ratios
 
 //Expansion ratio in y direction
-define(E1, 100)
+define(E1, 50)
 
 //Expansion ratio in downstream side
-define(E2, 100)
+define(E2, 50)
 
 //Expansion ratio in inlet
 define(E3, 10)
