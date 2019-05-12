@@ -442,7 +442,7 @@ define(sc, 1.0)
 define(Nl1, 250)
 
 //Number of cells in downstream
-define(Nl2, 6)
+define(Nl2, 10)
 
 //Number of cells in z direction
 define(Nl3, 1)
@@ -615,13 +615,13 @@ blocks
     hex2D(p02, p03, p04, p11)
     square
     (Nl2 Nl1 Nl3)
-    simpleGrading (E1 E2 1)
+    simpleGrading (0.1 E2 1)
     
     //B3
     hex2D(p11, p04, p05, p06)
     square
     (Nl2 Nl1 Nl3)
-    simpleGrading (E1 E1 1)
+    simpleGrading (0.1 E1 1)
     
     //B4
     hex2D(p09, p11, p06, p07)
