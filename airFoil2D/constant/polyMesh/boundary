@@ -21,33 +21,33 @@ FoamFile
     {
         type            wall;
         inGroups        1(wall);
-        nFaces          48;
-        startFace       47678;
+        nFaces          70;
+        startFace       58656;
     }
     farBoundaries
     {
         type            patch;
-        nFaces          72;
-        startFace       47726;
+        nFaces          88;
+        startFace       58726;
     }
     inlet
     {
         type            patch;
-        nFaces          24;
-        startFace       47798;
+        nFaces          30;
+        startFace       58814;
     }
     outlet
     {
         type            patch;
         nFaces          500;
-        startFace       47822;
+        startFace       58844;
     }
     defaultFaces
     {
         type            empty;
         inGroups        1(empty);
-        nFaces          48000;
-        startFace       48322;
+        nFaces          59000;
+        startFace       59344;
     }
 )
 

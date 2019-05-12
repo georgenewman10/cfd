@@ -1,2 +1,4 @@
 x cells 6 to 12
 x cells 12 to 24
+af front 12 to 15
+af back 12 to 20
