@@ -465,7 +465,7 @@ define(E1, 5)
 define(E2, 0.2)
 
 //Expansion ratio in x direction behind airfoil
-define(E3, 10)
+define(E3, 5)
 
 // Base z
 define(Zb, 0)
