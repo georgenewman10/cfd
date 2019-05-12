@@ -22,14 +22,15 @@ boundaryField
 {
     inlet
     {
-        type            freestream;
-        freestreamValue uniform (1 0 0);
+        type            uniformFixedValue;
+        uniformValue    constant (1 0 0);
     }
 
     outlet
     {
-        type            freestream;
-        freestreamValue uniform (1 0 0);
+        type            pressureInletOutletVelocity;
+        inletValue      uniform (1 0 0);
+        value           uniform (1 0 0);
     }
 
     walls
@@ -44,12 +45,14 @@ boundaryField
 
     airfoil
     {
-        type            noSlip;
+        type            fixedValue;
+        value           uniform (0 0 0);
     }
 
     farBoundaries
     {
-        type            slip;
+        type            uniformFixedValue;
+        uniformValue    constant (1 0 0);
     }
 }
 
