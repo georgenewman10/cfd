@@ -6,3 +6,4 @@ airfoil back cells 20 to 30
 expantion rations from 5 to 10
 
 expantion from 10 to 20 
+expansion 20 to 50
