@@ -1,1 +1,2 @@
 x cells 6 to 12
+x cells 12 to 24
