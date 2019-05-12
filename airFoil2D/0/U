@@ -49,8 +49,7 @@ boundaryField
 
     farBoundaries
     {
-        type            freestream;
-        freestreamValue uniform (1 0 0);
+        type            slip;
     }
 }
 

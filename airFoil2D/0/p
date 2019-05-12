@@ -49,8 +49,7 @@ boundaryField
     
     farBoundaries
     {
-        type            fixedValue;
-        value           uniform 0;
+        type            zeroGradient;
     }
 
 
