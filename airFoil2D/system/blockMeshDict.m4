@@ -451,7 +451,7 @@ define(Nl3, 1)
 define(Nl4, 15)
 
 //Number of meshes on the back part of airfoil edges p9-p11 and p10-p11
-define(Nl5, 20)
+define(Nl5, 30)
 
 //Number of interpolation points along the airfoil for defining the splines
 define(Naf, 99)
@@ -459,13 +459,13 @@ define(Naf, 99)
 //Cell expansion ratios
 
 //Expansion ratio in y above
-define(E1, 5)
+define(E1, 10)
 
 //Expansion ratio in y below
-define(E2, 0.2)
+define(E2, 0.1)
 
 //Expansion ratio in x direction behind airfoil
-define(E3, 5)
+define(E3, 10)
 
 // Base z
 define(Zb, 0)
