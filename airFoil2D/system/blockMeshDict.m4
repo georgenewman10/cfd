@@ -439,7 +439,7 @@ define(sc, 1.0)
 //Number of cells and points at each direction and element
 
 //Number of cells in y direction
-define(Nl1, 200)
+define(Nl1, 150)
 
 //Number of cells in downstream
 define(Nl2, 20)
@@ -448,7 +448,7 @@ define(Nl2, 20)
 define(Nl3, 1)
 
 //Number of meshes on the front part of airfoil edges p8-p9 and p8-p10b
-define(Nl4, 15)
+define(Nl4, 12)
 
 //Number of meshes on the back part of airfoil edges p9-p11 and p10-p11
 define(Nl5, 15)
