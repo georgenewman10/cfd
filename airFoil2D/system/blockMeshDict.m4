@@ -425,7 +425,7 @@ define(NACA4, 2)
 //Mesh
 
 //Height of mesh in y direction
-define(L1, 4.0)
+define(L1, 3.0)
 
 //Length of downstream
 define(L2, 3)
@@ -458,13 +458,13 @@ define(Naf, 99)
 
 //Cell expansion ratios
 
-//Expansion ratio in y direction
+//Expansion ratio in y above
 define(E1, 5)
 
-//Expansion ratio in downstream side
+//Expansion ratio in y below
 define(E2, 0.2)
 
-//Expansion ratio in inlet
+//Expansion ratio in x direction behind airfoil
 define(E3, 10)
 
 // Base z
@@ -615,13 +615,13 @@ blocks
     hex2D(p02, p03, p04, p11)
     square
     (Nl2 Nl1 Nl3)
-    simpleGrading (0.1 E2 1)
+    simpleGrading (E3 E2 1)
     
     //B3
     hex2D(p11, p04, p05, p06)
     square
     (Nl2 Nl1 Nl3)
-    simpleGrading (0.1 E1 1)
+    simpleGrading (E3 E1 1)
     
     //B4
     hex2D(p09, p11, p06, p07)
