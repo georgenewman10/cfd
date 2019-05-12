@@ -9,46 +9,46 @@ FoamFile
 {
     version     2.0;
     format      ascii;
-    class       polyBoundaryMesh;
-    location    "constant/polyMesh";
-    object      boundary;
+    class       volScalarField;
+    location    "4";
+    object      nuTilda;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-5
-(
+dimensions      [0 2 -1 0 0 0 0];
+
+internalField   uniform 0;
+
+boundaryField
+{
     airfoil
     {
-        type            wall;
-        inGroups        1(wall);
-        nFaces          48;
-        startFace       29696;
+        type            fixedValue;
+        value           uniform 0;
     }
     farBoundaries
     {
-        type            patch;
-        nFaces          36;
-        startFace       29744;
+        type            freestream;
+        freestreamValue uniform 0;
+        value           uniform 0;
     }
     inlet
     {
-        type            patch;
-        nFaces          24;
-        startFace       29780;
+        type            freestream;
+        freestreamValue uniform 0;
+        value           uniform 0;
     }
     outlet
     {
-        type            patch;
-        nFaces          500;
-        startFace       29804;
+        type            freestream;
+        freestreamValue uniform 0;
+        value           uniform 0;
     }
     defaultFaces
     {
         type            empty;
-        inGroups        1(empty);
-        nFaces          30000;
-        startFace       30304;
     }
-)
+}
+
 
 // ************************************************************************* //

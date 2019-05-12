@@ -439,10 +439,10 @@ define(sc, 1.0)
 //Number of cells and points at each direction and element
 
 //Number of cells in y direction
-define(Nl1, 150)
+define(Nl1, 250)
 
 //Number of cells in downstream
-define(Nl2, 20)
+define(Nl2, 6)
 
 //Number of cells in z direction
 define(Nl3, 1)
@@ -451,7 +451,7 @@ define(Nl3, 1)
 define(Nl4, 12)
 
 //Number of meshes on the back part of airfoil edges p9-p11 and p10-p11
-define(Nl5, 15)
+define(Nl5, 12)
 
 //Number of interpolation points along the airfoil for defining the splines
 define(Naf, 99)

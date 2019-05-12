@@ -5,7 +5,6 @@
 |   \\  /    A nd           | Web:      www.OpenFOAM.org                      |
 |    \\/     M anipulation  |                                                 |
 \*---------------------------------------------------------------------------*/
-// ************************************************************************* //
 FoamFile
 {
     version     2.0;
@@ -18,24 +17,25 @@ FoamFile
 
 ddtSchemes
 {
-    default         Euler;
+    default         steadyState;
 }
 
 gradSchemes
 {
     default         Gauss linear;
-    grad(p)         Gauss linear;
 }
 
 divSchemes
 {
     default         none;
-    div(phi,U)      Gauss linear;
+    div(phi,U)      bounded Gauss linearUpwind grad(U);
+    div(phi,nuTilda) bounded Gauss linearUpwind grad(nuTilda);
+    div((nuEff*dev2(T(grad(U))))) Gauss linear;
 }
 
 laplacianSchemes
 {
-    default         Gauss linear orthogonal;
+    default         Gauss linear corrected;
 }
 
 interpolationSchemes
@@ -45,9 +45,13 @@ interpolationSchemes
 
 snGradSchemes
 {
-    default         orthogonal;
+    default         corrected;
+}
+
+wallDist
+{
+    method meshWave;
 }
 
 
 // ************************************************************************* //
-

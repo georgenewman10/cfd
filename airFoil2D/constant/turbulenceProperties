@@ -23,7 +23,7 @@ RAS
 
     turbulence      off;
 
-    printCoeffs     off;
+    printCoeffs     on;
 }
 
 // ************************************************************************* //

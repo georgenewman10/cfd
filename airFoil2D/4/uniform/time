@@ -10,16 +10,16 @@ FoamFile
     version     2.0;
     format      ascii;
     class       dictionary;
-    location    "1/uniform";
+    location    "4/uniform";
     object      time;
 }
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
-value           1.00000000000000067;
+value           3.99999999999967049;
 
-name            "1";
+name            "4";
 
-index           1000;
+index           4000;
 
 deltaT          0.001;
 
