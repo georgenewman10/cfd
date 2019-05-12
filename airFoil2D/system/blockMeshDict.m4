@@ -448,10 +448,10 @@ define(Nl2, 24)
 define(Nl3, 1)
 
 //Number of meshes on the front part of airfoil edges p8-p9 and p8-p10b
-define(Nl4, 15)
+define(Nl4, 30)
 
 //Number of meshes on the back part of airfoil edges p9-p11 and p10-p11
-define(Nl5, 30)
+define(Nl5, 40)
 
 //Number of interpolation points along the airfoil for defining the splines
 define(Naf, 99)
