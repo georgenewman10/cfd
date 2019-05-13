@@ -459,13 +459,13 @@ define(Naf, 99)
 //Cell expansion ratios
 
 //Expansion ratio in y above
-define(E1, 50)
+define(E1, 100)
 
 //Expansion ratio in y below
-define(E2, 0.02)
+define(E2, 0.01)
 
 //Expansion ratio in x direction behind airfoil
-define(E3, 50)
+define(E3, 100)
 
 // Base z
 define(Zb, 0)
