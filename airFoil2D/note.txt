@@ -13,3 +13,4 @@ expansion 50 to 100
 y length 3 to 2
 
 af front 30 to 60
+changed grading on b0 and b5
