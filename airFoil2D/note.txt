@@ -9,3 +9,7 @@ expantion from 10 to 20
 expansion 20 to 50
 af front 15 to 30
 af back 30 to 40
+expansion 50 to 100
+y length 3 to 2
+
+af front 30 to 60

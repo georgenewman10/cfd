@@ -448,7 +448,7 @@ define(Nl2, 24)
 define(Nl3, 1)
 
 //Number of meshes on the front part of airfoil edges p8-p9 and p8-p10b
-define(Nl4, 30)
+define(Nl4, 60)
 
 //Number of meshes on the back part of airfoil edges p9-p11 and p10-p11
 define(Nl5, 40)
