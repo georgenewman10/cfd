@@ -603,7 +603,7 @@ blocks
     hex2D(p00, p01, p10, p08)
     square
     (Nl4 Nl1 Nl3)
-    simpleGrading (1 E2 1)
+    simpleGrading (1 E2 E2)
     
     //B1
     hex2D(p01, p02, p11, p10)
@@ -633,7 +633,7 @@ blocks
     hex2D(p08, p09, p07, p00)
     square
     (Nl4 Nl1 Nl3)
-    simpleGrading (1 E1 1)
+    simpleGrading (E1 E1 1)
 );
 
 edges
