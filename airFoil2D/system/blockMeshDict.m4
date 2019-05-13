@@ -425,7 +425,7 @@ define(NACA4, 2)
 //Mesh
 
 //Height of mesh in y direction
-define(L1, 3.0)
+define(L1, 2)
 
 //Length of downstream
 define(L2, 3)
